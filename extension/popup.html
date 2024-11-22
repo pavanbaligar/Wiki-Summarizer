@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Auto Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 400px;
+            height: 300px;
+            background-color: #f4f4f4;
+        }
+        #summaryBox {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow-y: auto;  /* Enables vertical scrolling */
+            margin-top: 20px;
+        }
+        #errorMessage {
+            color: red;
+            margin-top: 10px;
+        }
+        #summarizeButton {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #summarizeButton:hover {
+            background-color: #0056b3;
+        }
+        #urlInput {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h3>Wikipedia Auto Summary</h3>
+    <input type="text" id="urlInput" placeholder="Enter Wikipedia URL">
+    <button id="summarizeButton">Summarize</button>
+    <div id="summaryBox"></div>
+    <div id="errorMessage"></div>
+
+    <script>
+        document.getElementById('summarizeButton').addEventListener('click', function() {
+            const url = document.getElementById('urlInput').value;
+
+            if (url) {
+                // Fetch the summary from your Flask API
+                fetch('http://localhost:5000/summarize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const summaryBox = document.getElementById('summaryBox');
+                    const errorMessage = document.getElementById('errorMessage');
+
+                    if (data.summarized_content) {
+                        summaryBox.textContent = data.summarized_content;
+                        errorMessage.textContent = ''; // Clear any error message
+                    } else if (data.error) {
+                        summaryBox.textContent = '';
+                        errorMessage.textContent = data.error;
+                    }
+                })
+                .catch(error => {
+                    const errorMessage = document.getElementById('errorMessage');
+                    errorMessage.textContent = 'An error occurred while fetching the summary.';
+                });
+            } else {
+                alert("Please enter a valid Wikipedia URL.");
+            }
+        });
+    </script>
+</body>
+</html>
