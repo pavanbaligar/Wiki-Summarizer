@@ -1,0 +1,12 @@
+version: 1
+frontend:
+    phases:
+        build:
+            commands:
+                - echo "No build steps needed for extension"
+    artifacts:
+        baseDirectory: extension  # This should be relative to the root directory
+        files:
+            - '**/*'  # Upload all files in the extension folder
+    cache:
+        paths: []
